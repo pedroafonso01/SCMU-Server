@@ -1,0 +1,57 @@
+Index: Server
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- Server	(date 1556995856000)
++++ Server	(date 1556995856000)
+@@ -0,0 +1,49 @@
++import socketserver, sys
++from collections import defaultdict
++from pprint import pprint
++import json
++
++my_unix_command = ['bc']
++HOST = '0.0.0.0'
++PORT = 2000
++
++alarms = defaultdict(list)
++
++
++class SingleTCPHandler(socketserver.BaseRequestHandler):
++    "One instance per connection.  Override handle(self) to customize action."
++    def handle(self):
++        # self.request is the client connection
++        data = self.request.recv(1024)  # clip input at 1Kb
++        text = data.decode('utf-8')
++        # intrepert the request ...
++        pprint(json.loads(text))
++        jsonRequest = json.loads(text)
++        entry = {
++            'hour': jsonRequest['hours'],
++            'minute': jsonRequest['minutes'],
++            'weekday': jsonRequest['weekday']
++        }
++        alarms[jsonRequest['user']].append(entry)
++        print(alarms)
++        self.request.send('OK'.encode('utf-8'))
++        self.request.close()
++
++
++class SimpleServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
++    # Ctrl-C will cleanly kill all spawned threads
++    daemon_threads = True
++    # much faster rebinding
++    allow_reuse_address = True
++
++    def __init__(self, server_address, RequestHandlerClass):
++        socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
++
++
++if __name__ == "__main__":
++    server = SimpleServer((HOST, PORT), SingleTCPHandler)
++    # terminate with Ctrl-C
++    try:
++        server.serve_forever()
++    except KeyboardInterrupt:
++        sys.exit(0)
