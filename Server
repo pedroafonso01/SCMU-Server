@@ -7,7 +7,7 @@ my_unix_command = ['bc']
 HOST = '0.0.0.0'
 PORT = 2000
 
-alarms = defaultdict(list)
+alarms = defaultdict(lambda : {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
 
 
 class SingleTCPHandler(socketserver.BaseRequestHandler):
@@ -19,13 +19,15 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
         # intrepert the request ...
         pprint(json.loads(text))
         jsonRequest = json.loads(text)
-        entry = {
-            'hour': jsonRequest['hours'],
-            'minute': jsonRequest['minutes'],
-            'weekday': jsonRequest['weekday']
-        }
-        alarms[jsonRequest['user']].append(entry)
-        print(alarms)
+
+        if jsonRequest['msgType'] == 'newAlarm':
+
+            entry = {
+                'hour': jsonRequest['hours'],
+                'minute': jsonRequest['minutes'],
+            }
+            alarms[jsonRequest['user']][jsonRequest['weekday']].append(entry)
+            print(alarms)
         self.request.send('OK'.encode('utf-8'))
         self.request.close()
 
