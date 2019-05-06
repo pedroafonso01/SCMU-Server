@@ -2,13 +2,20 @@ import socketserver, sys
 from collections import defaultdict
 from pprint import pprint
 import json
+import ast
 
 my_unix_command = ['bc']
 HOST = '0.0.0.0'
 PORT = 2000
 
-alarms = defaultdict(lambda : {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
+#Falta ler do ficheiro
+alarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
 
+with open('alarms.txt', 'r') as f:
+    s = f.read()
+    alarms = ast.literal_eval(s)
+
+print(alarms)
 
 class SingleTCPHandler(socketserver.BaseRequestHandler):
     "One instance per connection.  Override handle(self) to customize action."
@@ -16,7 +23,6 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
         # self.request is the client connection
         data = self.request.recv(1024)  # clip input at 1Kb
         text = data.decode('utf-8')
-        # intrepert the request ...
         pprint(json.loads(text))
         jsonRequest = json.loads(text)
 
@@ -26,9 +32,17 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 'hour': jsonRequest['hours'],
                 'minute': jsonRequest['minutes'],
             }
-            alarms[jsonRequest['user']][jsonRequest['weekday']].append(entry)
-            print(alarms)
-        self.request.send('OK'.encode('utf-8'))
+
+            alarms[jsonRequest['user']][str(jsonRequest['weekday'])].append(entry)
+
+            with open('alarms.txt', 'w') as file:
+                file.write(json.dumps(alarms))
+
+        if jsonRequest['msgType'] == 'getMyAlarms':
+
+            self.request.send(json.dumps(alarms[jsonRequest['user']]).encode('utf-8'))
+
+        #self.request.send('OK'.encode('utf-8'))
         self.request.close()
 
 
