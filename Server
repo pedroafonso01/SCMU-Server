@@ -38,9 +38,15 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             with open('alarms.txt', 'w') as file:
                 file.write(json.dumps(alarms))
 
+            #Here should communicate with the arduino
+
         if jsonRequest['msgType'] == 'getMyAlarms':
 
             self.request.send(json.dumps(alarms[jsonRequest['user']]).encode('utf-8'))
+
+        if jsonRequest['msgType'] == 'getOthersAlarms':
+
+            self.request.send(json.dumps(list(alarms.keys())).encode('utf-8'))
 
         #self.request.send('OK'.encode('utf-8'))
         self.request.close()
