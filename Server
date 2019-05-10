@@ -1,4 +1,5 @@
 import socketserver, sys
+import os
 from collections import defaultdict
 from pprint import pprint
 import json
@@ -8,14 +9,39 @@ my_unix_command = ['bc']
 HOST = '0.0.0.0'
 PORT = 2000
 
-#Falta ler do ficheiro
-alarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
+activeAlarms = {}
+pastAlarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
+authorizations = defaultdict(lambda: [])
+invites = (defaultdict(lambda: []))
+users = []
 
-with open('alarms.txt', 'r') as f:
+with open('activeAlarms.txt', 'r') as f:
     s = f.read()
-    alarms = ast.literal_eval(s)
+    if len(s) > 0:
+        activeAlarms = ast.literal_eval(s)
 
-print(alarms)
+#After this should check if any of the active alarms have already timed out
+
+with open('pastAlarms.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        pastAlarms = ast.literal_eval(s)
+
+with open('authorizations.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        authorizations = ast.literal_eval(s)
+
+with open('users.txt', 'r+') as f:
+    s = f.read()
+    if len(s) > 0:
+        users = ast.literal_eval(s)
+
+print(activeAlarms)
+print(users)
+print(pastAlarms)
+print(authorizations)
+
 
 class SingleTCPHandler(socketserver.BaseRequestHandler):
     "One instance per connection.  Override handle(self) to customize action."
@@ -26,27 +52,95 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
         pprint(json.loads(text))
         jsonRequest = json.loads(text)
 
+        if jsonRequest['msgType'] == 'newUser':
+
+            if jsonRequest['user'] not in users:
+                users.append(jsonRequest['user'])
+                with open('users.txt', 'w') as file:
+                    file.write(json.dumps(users))
+
         if jsonRequest['msgType'] == 'newAlarm':
 
+            #TODO: Use time library from python
             entry = {
+                'weekday': jsonRequest['weekday'],
                 'hour': jsonRequest['hours'],
                 'minute': jsonRequest['minutes'],
+                #'settings': jsonRequest['settings']
             }
 
-            alarms[jsonRequest['user']][str(jsonRequest['weekday'])].append(entry)
+            #Override the current active alarm for the user as only one is can be active
+            activeAlarms[jsonRequest['user']] = entry
 
-            with open('alarms.txt', 'w') as file:
-                file.write(json.dumps(alarms))
+            with open('activeAlarms.txt', 'w') as file:
+                file.write(json.dumps(activeAlarms))
+
+            #TODO: start a timer here to latter triger the respective arduino
 
             #Here should communicate with the arduino
+            #s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
+            #s1.bind(arduinos[jsonRequest['user']])
 
-        if jsonRequest['msgType'] == 'getMyAlarms':
+            #s1.send("hello form server")
 
-            self.request.send(json.dumps(alarms[jsonRequest['user']]).encode('utf-8'))
+        if jsonRequest['msgType'] == 'getAlarms':
 
-        if jsonRequest['msgType'] == 'getOthersAlarms':
+            user = jsonRequest['user']
+            others_flag = jsonRequest['controlledUsers']
 
-            self.request.send(json.dumps(list(alarms.keys())).encode('utf-8'))
+            #Here I will either send mine or all my controlled
+
+            if others_flag:
+                alarms = defaultdict(lambda: {})
+                for u in authorizations[user]:
+                    alarms[u] = activeAlarms[u]
+                self.request.send(json.dumps(alarms).encode('utf-8'))
+
+            if not others_flag:
+                if user in activeAlarms:
+                    self.request.send(json.dumps(activeAlarms[user]).encode('utf-8'))
+
+        if jsonRequest['msgType'] == 'getStatistics':
+
+            user = jsonRequest['user']
+            statistics = {1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}}
+
+            for a in pastAlarms[user]:
+                if len(pastAlarms[user][a]) > 0:
+                    avg = sum(pastAlarms[user][a])/len(pastAlarms[user][a])
+                    statistics[a] = avg
+
+            self.request.send(json.dumps(statistics).encode('utf-8'))
+
+        if jsonRequest['msgType'] == 'getUsers':
+
+            control_flag = jsonRequest['all']
+
+            if control_flag:
+                self.request.send(json.dumps(authorizations[user]))
+
+            if not control_flag:
+                other_users = []
+                for u in users:
+                    if u not in authorizations[user]:
+                        other_users.append(u)
+                self.request.send(json.dumps(other_users).encode('utf-8'))
+
+        if jsonRequest['msgType'] == 'invite':
+
+            user = jsonRequest['user']
+            invite_user = jsonRequest['invited']
+
+            invites[invite_user].append(user)
+            self.request.send('OK'.encode('utf-8'))
+
+
+        # if jsonRequest['msgType'] == 'helloArduino':
+        #     pprint("Arduino said hello from: "+jsonRequest['user'])
+        #     pprint("Addr: "+str(self.client_address))
+        #     pprint("Port: "+"...")
+        #     arduinos[jsonRequest['user']] = self.client_address
+        #     self.request.sendall(json.dumps(activeAlarms[jsonRequest['user']]).encode('utf-8'))
 
         #self.request.send('OK'.encode('utf-8'))
         self.request.close()
