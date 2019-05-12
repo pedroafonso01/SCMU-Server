@@ -1,15 +1,17 @@
 import socketserver, sys
-import os
+import datetime
 from collections import defaultdict
 from pprint import pprint
 import json
 import ast
+from threading import Timer
 
 my_unix_command = ['bc']
 HOST = '0.0.0.0'
 PORT = 2000
 
-activeAlarms = {}
+activeAlarms = defaultdict(lambda: {})
+timers = {}
 pastAlarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
 authorizations = defaultdict(lambda: [])
 invites = (defaultdict(lambda: []))
@@ -20,7 +22,10 @@ with open('activeAlarms.txt', 'r') as f:
     if len(s) > 0:
         activeAlarms = ast.literal_eval(s)
 
-#After this should check if any of the active alarms have already timed out
+#Check if any alarm has already timedout
+for u in activeAlarms:
+    if datetime.datetime.now() > datetime.datetime.fromtimestamp(activeAlarms[u]['alarm']):
+        activeAlarms.pop(u, None)
 
 with open('pastAlarms.txt', 'r') as f:
     s = f.read()
@@ -43,6 +48,14 @@ print(pastAlarms)
 print(authorizations)
 
 
+def triggerAlarm(username):
+    #TODO: Broadcast
+    #Missing the alarm settings
+    print(username)
+    print(username)
+    print(username)
+
+
 class SingleTCPHandler(socketserver.BaseRequestHandler):
     "One instance per connection.  Override handle(self) to customize action."
     def handle(self):
@@ -61,11 +74,12 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
 
         if jsonRequest['msgType'] == 'newAlarm':
 
-            #TODO: Use time library from python
+            user = jsonRequest['user']
+
+            alarm = datetime.datetime.fromtimestamp(jsonRequest['alarm']/1000)
+
             entry = {
-                'weekday': jsonRequest['weekday'],
-                'hour': jsonRequest['hours'],
-                'minute': jsonRequest['minutes'],
+                'alarm': alarm.timestamp(),
                 #'settings': jsonRequest['settings']
             }
 
@@ -75,13 +89,22 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             with open('activeAlarms.txt', 'w') as file:
                 file.write(json.dumps(activeAlarms))
 
-            #TODO: start a timer here to latter triger the respective arduino
+            time = alarm - datetime.datetime.now()
 
-            #Here should communicate with the arduino
-            #s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM);
-            #s1.bind(arduinos[jsonRequest['user']])
+            pprint("alarm: "+str(alarm))
+            pprint("now: "+str(datetime.datetime.now()))
+            pprint("seconds: "+str(time.seconds))
 
-            #s1.send("hello form server")
+            if user in timers:
+                if timers[user] is not None:
+                    timers[user].cancel()
+
+            pprint("timers: "+str(timers))
+
+            t = Timer(time.seconds, triggerAlarm, [user])
+            t.start()
+
+            timers[user] = t
 
         if jsonRequest['msgType'] == 'getAlarms':
 
@@ -91,9 +114,14 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             #Here I will either send mine or all my controlled
 
             if others_flag:
-                alarms = defaultdict(lambda: {})
-                for u in authorizations[user]:
-                    alarms[u] = activeAlarms[u]
+                alarms = []
+                if user in authorizations:
+                    for u in authorizations[user]:
+                        if u in activeAlarms:
+                            auxalarm = datetime.datetime.fromtimestamp(activeAlarms[u]['alarm'])
+                            alarm_to_send = {'hour': auxalarm.hour,
+                                           'minute': auxalarm.minute}
+                            alarms.append((u, alarm_to_send))
                 self.request.send(json.dumps(alarms).encode('utf-8'))
 
             if not others_flag:
@@ -102,8 +130,10 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
 
         if jsonRequest['msgType'] == 'getStatistics':
 
+            #TODO: this must be review, new statistics data
+
             user = jsonRequest['user']
-            statistics = {1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}}
+            statistics = {}
 
             for a in pastAlarms[user]:
                 if len(pastAlarms[user][a]) > 0:
@@ -115,6 +145,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
         if jsonRequest['msgType'] == 'getUsers':
 
             control_flag = jsonRequest['all']
+            user = jsonRequest['user']
 
             if control_flag:
                 self.request.send(json.dumps(authorizations[user]))
@@ -122,7 +153,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             if not control_flag:
                 other_users = []
                 for u in users:
-                    if u not in authorizations[user]:
+                    if u not in authorizations[user] and u != user:
                         other_users.append(u)
                 self.request.send(json.dumps(other_users).encode('utf-8'))
 
@@ -134,13 +165,15 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             invites[invite_user].append(user)
             self.request.send('OK'.encode('utf-8'))
 
+        if jsonRequest['msgType'] == 'triggerAlarm':
+            #TODO: test this
+            user = jsonRequest['user']
+            alarm = activeAlarms.pop(user, None)
 
-        # if jsonRequest['msgType'] == 'helloArduino':
-        #     pprint("Arduino said hello from: "+jsonRequest['user'])
-        #     pprint("Addr: "+str(self.client_address))
-        #     pprint("Port: "+"...")
-        #     arduinos[jsonRequest['user']] = self.client_address
-        #     self.request.sendall(json.dumps(activeAlarms[jsonRequest['user']]).encode('utf-8'))
+            waking_time = datetime.datetime.now() - alarm
+            computed_time = waking_time.minute + waking_time.seconds/60
+
+            pastAlarms[user][alarm.weekday()+1].append(computed_time)
 
         #self.request.send('OK'.encode('utf-8'))
         self.request.close()
