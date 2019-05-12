@@ -135,10 +135,11 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             user = jsonRequest['user']
             statistics = {}
 
-            for a in pastAlarms[user]:
-                if len(pastAlarms[user][a]) > 0:
-                    avg = sum(pastAlarms[user][a])/len(pastAlarms[user][a])
-                    statistics[a] = avg
+            if user in pastAlarms:
+                for a in pastAlarms[user]:
+                    if len(pastAlarms[user][a]) > 0:
+                        avg = sum(pastAlarms[user][a])/len(pastAlarms[user][a])
+                        statistics[a] = avg
 
             self.request.send(json.dumps(statistics).encode('utf-8'))
 
