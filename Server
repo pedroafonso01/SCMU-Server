@@ -13,8 +13,8 @@ PORT = 2000
 activeAlarms = defaultdict(lambda: {})
 timers = {}
 pastAlarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
-authorizations = defaultdict(lambda: [])
-invites = (defaultdict(lambda: []))
+authorizations = defaultdict(list)
+invites = defaultdict(list)
 users = []
 
 with open('activeAlarms.txt', 'r') as f:
@@ -23,7 +23,7 @@ with open('activeAlarms.txt', 'r') as f:
         activeAlarms = ast.literal_eval(s)
 
 #Check if any alarm has already timedout
-for u in activeAlarms:
+for u in list(activeAlarms):
     if datetime.datetime.now() > datetime.datetime.fromtimestamp(activeAlarms[u]['alarm']):
         activeAlarms.pop(u, None)
 
@@ -37,10 +37,15 @@ with open('authorizations.txt', 'r') as f:
     if len(s) > 0:
         authorizations = ast.literal_eval(s)
 
-with open('users.txt', 'r+') as f:
+with open('users.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
         users = ast.literal_eval(s)
+
+with open('invites.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        invites.update(ast.literal_eval(s))
 
 print(activeAlarms)
 print(users)
@@ -114,14 +119,18 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             #Here I will either send mine or all my controlled
 
             if others_flag:
+                pprint(authorizations)
+                pprint(activeAlarms)
                 alarms = []
                 if user in authorizations:
                     for u in authorizations[user]:
+                        alarm_to_send = {}
                         if u in activeAlarms:
                             auxalarm = datetime.datetime.fromtimestamp(activeAlarms[u]['alarm'])
                             alarm_to_send = {'hour': auxalarm.hour,
                                            'minute': auxalarm.minute}
-                            alarms.append((u, alarm_to_send))
+                        alarms.append((u, alarm_to_send))
+                pprint(alarms)
                 self.request.send(json.dumps(alarms).encode('utf-8'))
 
             if not others_flag:
@@ -153,9 +162,13 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
 
             if not control_flag:
                 other_users = []
-                for u in users:
-                    if u not in authorizations[user] and u != user:
-                        other_users.append(u)
+                if user in authorizations:
+                    for u in users:
+                        if u not in authorizations[user]:
+                            other_users.append(u)
+                else:
+                    other_users = users.copy()
+                other_users.remove(user)
                 self.request.send(json.dumps(other_users).encode('utf-8'))
 
         if jsonRequest['msgType'] == 'invite':
@@ -163,8 +176,25 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             user = jsonRequest['user']
             invite_user = jsonRequest['invited']
 
+            pprint(invites)
             invites[invite_user].append(user)
+
             self.request.send('OK'.encode('utf-8'))
+
+            with open('invites.txt', 'w') as file:
+                file.write(json.dumps(invites))
+
+        if jsonRequest['msgType'] == 'getInvites':
+
+            pprint(str(invites))
+
+            user = jsonRequest['user']
+
+            self.request.send(json.dumps(invites[user]).encode('utf-8'))
+
+        if jsonRequest['msgType'] == 'acceptInvite':
+
+            pprint("hello")
 
         if jsonRequest['msgType'] == 'triggerAlarm':
             #TODO: test this

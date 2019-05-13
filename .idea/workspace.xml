@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="220b7188-77ab-42e9-95aa-b10610c509f4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/activeAlarms.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/authorizations.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/invites.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pastAlarms.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/users.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/First_Commit,_only_processes_the_setMyAlarm.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Server" beforeDir="false" afterPath="$PROJECT_DIR$/Server" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,8 +22,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Server">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="27" column="81" selection-start-line="27" selection-start-column="81" selection-end-line="27" selection-end-column="81" />
+            <state relative-caret-position="57">
+              <caret line="47" column="39" lean-forward="true" selection-start-line="47" selection-start-column="23" selection-end-line="47" selection-end-column="39" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -26,6 +32,11 @@
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>invites</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -45,8 +56,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-16" />
-    <option name="y" value="27" />
+    <option name="x" value="20" />
+    <option name="y" value="49" />
     <option name="width" value="1260" />
     <option name="height" value="663" />
   </component>
@@ -162,7 +173,21 @@
       <option name="project" value="LOCAL" />
       <updated>1557526740117</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="All ops with the exception of 'AnswerInvite', 'TriggerAlarm' are implemented">
+      <created>1557682334485</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1557682334485</updated>
+    </task>
+    <task id="LOCAL-00007" summary="All ops with the exception of 'AnswerInvite', 'TriggerAlarm' are implemented">
+      <created>1557682507877</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1557682507877</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView">
@@ -175,10 +200,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-16" y="27" width="1260" height="663" extended-state="0" />
+    <frame x="20" y="49" width="1260" height="663" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30623972" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.31116584" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -205,7 +230,8 @@
     <MESSAGE value="SetMyAlarms and getMyAlarms initial implementation done" />
     <MESSAGE value="Initial implementation of getOtherAlarms" />
     <MESSAGE value="Still incomplete but started to change the methods according to the report" />
-    <option name="LAST_COMMIT_MESSAGE" value="Still incomplete but started to change the methods according to the report" />
+    <MESSAGE value="All ops with the exception of 'AnswerInvite', 'TriggerAlarm' are implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="All ops with the exception of 'AnswerInvite', 'TriggerAlarm' are implemented" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file:///usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/socketserver.py">
@@ -217,8 +243,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Server">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="27" column="81" selection-start-line="27" selection-start-column="81" selection-end-line="27" selection-end-column="81" />
+        <state relative-caret-position="57">
+          <caret line="47" column="39" lean-forward="true" selection-start-line="47" selection-start-column="23" selection-end-line="47" selection-end-column="39" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
