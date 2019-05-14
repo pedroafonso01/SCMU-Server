@@ -1,10 +1,12 @@
 import socketserver, sys
 import datetime
-from collections import defaultdict
-from pprint import pprint
 import json
 import ast
+import socket
+import time
 from threading import Timer
+from collections import defaultdict
+from pprint import pprint
 
 my_unix_command = ['bc']
 HOST = '0.0.0.0'
@@ -20,7 +22,7 @@ users = []
 with open('activeAlarms.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
-        activeAlarms = ast.literal_eval(s)
+        activeAlarms.update(json.loads(s))
 
 #Check if any alarm has already timedout
 for u in list(activeAlarms):
@@ -30,12 +32,12 @@ for u in list(activeAlarms):
 with open('pastAlarms.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
-        pastAlarms = ast.literal_eval(s)
+        pastAlarms.update(ast.literal_eval(s))
 
 with open('authorizations.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
-        authorizations = ast.literal_eval(s)
+        authorizations.update(ast.literal_eval(s))
 
 with open('users.txt', 'r') as f:
     s = f.read()
@@ -53,12 +55,30 @@ print(pastAlarms)
 print(authorizations)
 
 
-def triggerAlarm(username):
+def triggerAlarm(username, settings):
     #TODO: Broadcast
     #Missing the alarm settings
     print(username)
     print(username)
     print(username)
+
+    bc_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    bc_server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    # Set a timeout so the socket does not block
+    # indefinitely when trying to receive data.
+    #TODO: test this
+    bc_server.settimeout(0.2)
+    bc_server.bind((HOST, PORT))
+    message = {
+        'user': username,
+        'settings': settings,
+    }
+
+    #TODO: change the loop cond
+    while True:
+        bc_server.sendto(message.encode('utf-8'), ('<broadcast>', 37020))
+        print("message sent!")
+        time.sleep(1)
 
 
 class SingleTCPHandler(socketserver.BaseRequestHandler):
@@ -82,10 +102,11 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             user = jsonRequest['user']
 
             alarm = datetime.datetime.fromtimestamp(jsonRequest['alarm']/1000)
+            settings = jsonRequest['settings']
 
             entry = {
                 'alarm': alarm.timestamp(),
-                #'settings': jsonRequest['settings']
+                'settings': jsonRequest['settings']
             }
 
             #Override the current active alarm for the user as only one is can be active
@@ -106,7 +127,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
 
             pprint("timers: "+str(timers))
 
-            t = Timer(time.seconds, triggerAlarm, [user])
+            t = Timer(time.seconds, triggerAlarm, [user, settings])
             t.start()
 
             timers[user] = t
@@ -139,7 +160,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
 
         if jsonRequest['msgType'] == 'getStatistics':
 
-            #TODO: this must be review, new statistics data
+            #TODO: this must be reviewed, new statistics data
 
             user = jsonRequest['user']
             statistics = {}
@@ -177,7 +198,8 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             invite_user = jsonRequest['invited']
 
             pprint(invites)
-            invites[invite_user].append(user)
+            if user not in invites[invite_user]:
+                invites[invite_user].append(user)
 
             self.request.send('OK'.encode('utf-8'))
 
@@ -193,6 +215,22 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             self.request.send(json.dumps(invites[user]).encode('utf-8'))
 
         if jsonRequest['msgType'] == 'acceptInvite':
+
+            user = jsonRequest['user']
+            invite_from = jsonRequest['inviteFrom']
+
+            pprint(authorizations)
+
+            authorizations[invite_from].append(user)
+            invites[user].remove(invite_from)
+
+            pprint(authorizations)
+
+            with open('invites.txt', 'w') as file:
+                file.write(json.dumps(invites))
+
+            with open('authorizations.txt', 'w') as file:
+                file.write(json.dumps(authorizations))
 
             pprint("hello")
 
