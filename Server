@@ -75,9 +75,11 @@ def triggerAlarm(username, settings):
     }
 
     #TODO: change the loop cond
-    while True:
-        bc_server.sendto(message.encode('utf-8'), ('<broadcast>', 37020))
+    i = 5
+    while i > 0:
+        bc_server.sendto(json.dumps(message).encode('utf-8'), ('<broadcast>', 37020))
         print("message sent!")
+        i -= 1
         time.sleep(1)
 
 
