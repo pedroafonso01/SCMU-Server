@@ -173,6 +173,8 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                     if len(pastAlarms[user][a]) > 0:
                         avg = sum(pastAlarms[user][a])/len(pastAlarms[user][a])
                         statistics[a] = avg
+                    else:
+                        statistics[a] = 0
 
             self.request.send(json.dumps(statistics).encode('utf-8'))
 
