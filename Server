@@ -19,43 +19,6 @@ authorizations = defaultdict(list)
 invites = defaultdict(list)
 users = []
 
-with open('activeAlarms.txt', 'r') as f:
-    s = f.read()
-    if len(s) > 0:
-        activeAlarms.update(json.loads(s))
-
-#Check if any alarm has already timedout
-for u in list(activeAlarms):
-    if datetime.datetime.now() > datetime.datetime.fromtimestamp(activeAlarms[u]['alarm']):
-        activeAlarms.pop(u, None)
-    #TODO: start any active timers
-
-with open('pastAlarms.txt', 'r') as f:
-    s = f.read()
-    if len(s) > 0:
-        pastAlarms.update(json.loads(s))
-
-with open('authorizations.txt', 'r') as f:
-    s = f.read()
-    if len(s) > 0:
-        authorizations.update(ast.literal_eval(s))
-
-with open('users.txt', 'r') as f:
-    s = f.read()
-    if len(s) > 0:
-        users = ast.literal_eval(s)
-
-with open('invites.txt', 'r') as f:
-    s = f.read()
-    if len(s) > 0:
-        invites.update(ast.literal_eval(s))
-
-print(activeAlarms)
-print(users)
-print(pastAlarms)
-print(authorizations)
-
-
 def triggerAlarm(username, settings):
     #TODO: Broadcast
     #Missing the alarm settings
@@ -82,6 +45,48 @@ def triggerAlarm(username, settings):
         print("message sent!")
         i -= 1
         time.sleep(1)
+
+with open('activeAlarms.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        activeAlarms.update(json.loads(s))
+
+#Check if any alarm has already timedout
+for u in list(activeAlarms):
+    alarm = datetime.datetime.fromtimestamp(activeAlarms[u]['alarm'])
+    if datetime.datetime.now() > alarm:
+        activeAlarms.pop(u, None)
+    else:
+        time = alarm - datetime.datetime.now()
+
+        t = Timer(time.seconds, triggerAlarm, [u, activeAlarms[u]['settings']])
+        t.start()
+        timers[u] = t
+
+with open('pastAlarms.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        pastAlarms.update(json.loads(s))
+
+with open('authorizations.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        authorizations.update(ast.literal_eval(s))
+
+with open('users.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        users = ast.literal_eval(s)
+
+with open('invites.txt', 'r') as f:
+    s = f.read()
+    if len(s) > 0:
+        invites.update(ast.literal_eval(s))
+
+print(activeAlarms)
+print(users)
+print(pastAlarms)
+print(authorizations)
 
 
 class SingleTCPHandler(socketserver.BaseRequestHandler):
