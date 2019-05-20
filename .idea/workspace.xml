@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="220b7188-77ab-42e9-95aa-b10610c509f4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server" beforeDir="false" afterPath="$PROJECT_DIR$/Server" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/activeAlarms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/activeAlarms.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pastAlarms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pastAlarms.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Server">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="89">
-              <caret line="249" column="47" selection-start-line="249" selection-start-column="47" selection-end-line="249" selection-end-column="47" />
+            <state relative-caret-position="234">
+              <caret line="175" column="25" selection-start-line="175" selection-start-column="25" selection-end-line="175" selection-end-column="25" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -52,7 +50,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="6" />
     <option name="y" value="23" />
     <option name="width" value="1260" />
@@ -205,7 +203,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558022966571</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="All Implemented and tested">
+      <created>1558367935278</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1558367935278</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -251,7 +256,8 @@
     <MESSAGE value="All ops with the exception of 'AnswerInvite', 'TriggerAlarm' are implemented" />
     <MESSAGE value="Broadcast alarm to arduino and accept invite only ops left that need to be implemented" />
     <MESSAGE value="Only the Broadcast and Trigger Alarm event left to best tested" />
-    <option name="LAST_COMMIT_MESSAGE" value="Only the Broadcast and Trigger Alarm event left to best tested" />
+    <MESSAGE value="All Implemented and tested" />
+    <option name="LAST_COMMIT_MESSAGE" value="All Implemented and tested" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file:///usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/socketserver.py">
@@ -270,8 +276,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Server">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="249" column="47" selection-start-line="249" selection-start-column="47" selection-end-line="249" selection-end-column="47" />
+        <state relative-caret-position="234">
+          <caret line="175" column="25" selection-start-line="175" selection-start-column="25" selection-end-line="175" selection-end-column="25" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
