@@ -5,8 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server" beforeDir="false" afterPath="$PROJECT_DIR$/Server" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/activeAlarms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/activeAlarms.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authorizations.txt" beforeDir="false" afterPath="$PROJECT_DIR$/authorizations.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/invites.txt" beforeDir="false" afterPath="$PROJECT_DIR$/invites.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pastAlarms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pastAlarms.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +18,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Server">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="81" column="14" selection-start-line="81" selection-start-column="14" selection-end-line="81" selection-end-column="14" />
+            <state relative-caret-position="89">
+              <caret line="249" column="47" selection-start-line="249" selection-start-column="47" selection-end-line="249" selection-end-column="47" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -54,10 +53,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="20" />
-    <option name="y" value="63" />
+    <option name="x" value="6" />
+    <option name="y" value="23" />
     <option name="width" value="1260" />
-    <option name="height" value="663" />
+    <option name="height" value="689" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -65,6 +64,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -76,7 +76,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -199,7 +198,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557853773109</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Only the Broadcast and Trigger Alarm event left to best tested">
+      <created>1558022966571</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1558022966571</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TodoView">
@@ -212,15 +218,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="20" y="63" width="1260" height="663" extended-state="0" />
+    <frame x="6" y="23" width="1260" height="689" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.31609195" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3357964" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.44833624" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.40536013" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -264,8 +270,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Server">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="81" column="14" selection-start-line="81" selection-start-column="14" selection-end-line="81" selection-end-column="14" />
+        <state relative-caret-position="89">
+          <caret line="249" column="47" selection-start-line="249" selection-start-column="47" selection-end-line="249" selection-end-column="47" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>

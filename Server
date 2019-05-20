@@ -28,11 +28,12 @@ with open('activeAlarms.txt', 'r') as f:
 for u in list(activeAlarms):
     if datetime.datetime.now() > datetime.datetime.fromtimestamp(activeAlarms[u]['alarm']):
         activeAlarms.pop(u, None)
+    #TODO: start any active timers
 
 with open('pastAlarms.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
-        pastAlarms.update(ast.literal_eval(s))
+        pastAlarms.update(json.loads(s))
 
 with open('authorizations.txt', 'r') as f:
     s = f.read()
@@ -75,7 +76,7 @@ def triggerAlarm(username, settings):
     }
 
     #TODO: change the loop cond
-    i = 5
+    i = 1
     while i > 0:
         bc_server.sendto(json.dumps(message).encode('utf-8'), ('<broadcast>', 37020))
         print("message sent!")
@@ -239,12 +240,19 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
         if jsonRequest['msgType'] == 'triggerAlarm':
             #TODO: test this
             user = jsonRequest['user']
-            alarm = activeAlarms.pop(user, None)
 
-            waking_time = datetime.datetime.now() - alarm
-            computed_time = waking_time.minute + waking_time.seconds/60
+            alarm = datetime.datetime.fromtimestamp(activeAlarms.pop(user, None)['alarm'])
 
-            pastAlarms[user][alarm.weekday()+1].append(computed_time)
+            if datetime.datetime.now() > alarm:
+                waking_time = datetime.datetime.now() - alarm
+            else:
+                waking_time = alarm - datetime.datetime.now()
+            computed_time = waking_time.seconds
+
+            pastAlarms[user][str(alarm.weekday()+1)].append(computed_time)
+
+            with open('pastAlarms.txt', 'w') as file:
+                file.write(json.dumps(pastAlarms))
 
         #self.request.send('OK'.encode('utf-8'))
         self.request.close()
