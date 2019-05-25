@@ -18,10 +18,10 @@ pastAlarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [
 authorizations = defaultdict(list)
 invites = defaultdict(list)
 users = []
+ackAlarms = {}
 
 def triggerAlarm(username, settings):
-    #TODO: Broadcast
-    #Missing the alarm settings
+    # Missing the alarm settings
     print(username)
     print(username)
     print(username)
@@ -30,7 +30,6 @@ def triggerAlarm(username, settings):
     bc_server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     # Set a timeout so the socket does not block
     # indefinitely when trying to receive data.
-    #TODO: test this
     bc_server.settimeout(0.2)
     bc_server.bind((HOST, PORT))
     message = {
@@ -38,7 +37,7 @@ def triggerAlarm(username, settings):
         'settings': settings,
     }
 
-    #TODO: change the loop cond
+    # TODO: change the loop cond
     i = 1
     while i > 0:
         bc_server.sendto(json.dumps(message).encode('utf-8'), ('<broadcast>', 37020))
@@ -51,7 +50,7 @@ with open('activeAlarms.txt', 'r') as f:
     if len(s) > 0:
         activeAlarms.update(json.loads(s))
 
-#Check if any alarm has already timedout
+# Check if any alarm has already timedout
 for u in list(activeAlarms):
     alarm = datetime.datetime.fromtimestamp(activeAlarms[u]['alarm'])
     if datetime.datetime.now() > alarm:
@@ -105,6 +104,8 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 with open('users.txt', 'w') as file:
                     file.write(json.dumps(users))
 
+            self.request.close()
+
         if jsonRequest['msgType'] == 'newAlarm':
 
             user = jsonRequest['user']
@@ -117,7 +118,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 'settings': jsonRequest['settings']
             }
 
-            #Override the current active alarm for the user as only one is can be active
+            # Override the current active alarm for the user as only one is can be active
             activeAlarms[jsonRequest['user']] = entry
 
             with open('activeAlarms.txt', 'w') as file:
@@ -140,12 +141,14 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
 
             timers[user] = t
 
+            self.request.close()
+
         if jsonRequest['msgType'] == 'getAlarms':
 
             user = jsonRequest['user']
             others_flag = jsonRequest['controlledUsers']
 
-            #Here I will either send mine or all my controlled
+            # Here I will either send mine or all my controlled
 
             if others_flag:
                 pprint(authorizations)
@@ -157,7 +160,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                         if u in activeAlarms:
                             auxalarm = datetime.datetime.fromtimestamp(activeAlarms[u]['alarm'])
                             alarm_to_send = {'hour': auxalarm.hour,
-                                           'minute': auxalarm.minute}
+                                             'minute': auxalarm.minute}
                         alarms.append((u, alarm_to_send))
                 pprint(alarms)
                 self.request.send(json.dumps(alarms).encode('utf-8'))
@@ -166,9 +169,9 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 if user in activeAlarms:
                     self.request.send(json.dumps(activeAlarms[user]).encode('utf-8'))
 
-        if jsonRequest['msgType'] == 'getStatistics':
+            self.request.close()
 
-            #TODO: this must be reviewed, new statistics data
+        if jsonRequest['msgType'] == 'getStatistics':
 
             user = jsonRequest['user']
             statistics = {}
@@ -182,6 +185,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                         statistics[a] = 0
 
             self.request.send(json.dumps(statistics).encode('utf-8'))
+            self.request.close()
 
         if jsonRequest['msgType'] == 'getUsers':
 
@@ -202,6 +206,8 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 other_users.remove(user)
                 self.request.send(json.dumps(other_users).encode('utf-8'))
 
+            self.request.close()
+
         if jsonRequest['msgType'] == 'invite':
 
             user = jsonRequest['user']
@@ -216,6 +222,8 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             with open('invites.txt', 'w') as file:
                 file.write(json.dumps(invites))
 
+            self.request.close()
+
         if jsonRequest['msgType'] == 'getInvites':
 
             pprint(str(invites))
@@ -223,6 +231,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             user = jsonRequest['user']
 
             self.request.send(json.dumps(invites[user]).encode('utf-8'))
+            self.request.close()
 
         if jsonRequest['msgType'] == 'acceptInvite':
 
@@ -243,9 +252,9 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 file.write(json.dumps(authorizations))
 
             pprint("hello")
+            self.request.close()
 
         if jsonRequest['msgType'] == 'triggerAlarm':
-            #TODO: test this
             user = jsonRequest['user']
 
             alarm = datetime.datetime.fromtimestamp(activeAlarms.pop(user, None)['alarm'])
@@ -261,8 +270,25 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             with open('pastAlarms.txt', 'w') as file:
                 file.write(json.dumps(pastAlarms))
 
-        #self.request.send('OK'.encode('utf-8'))
-        self.request.close()
+            # TODO: change from here
+            auxSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            HOST = ackAlarms[user]['host']
+            PORT = ackAlarms[user]['port']
+            auxSocket.connect((HOST, PORT))
+            auxSocket.sendall(b'WOKE')
+
+            auxSocket.close()
+
+            self.request.close()
+
+        if jsonRequest['msgType'] == 'ackAlarm':
+            user = jsonRequest['user']
+            addr = {'host': jsonRequest['host'], 'port': jsonRequest['port']}
+            ackAlarms[user] = addr
+
+
+        # self.request.send('OK'.encode('utf-8'))
+        # self.request.close()
 
 
 class SimpleServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
