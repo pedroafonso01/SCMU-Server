@@ -14,7 +14,7 @@ PORT = 2000
 
 activeAlarms = defaultdict(lambda: {})
 timers = {}
-pastAlarms = defaultdict(lambda: {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []})
+pastAlarms = defaultdict(lambda: {'1': [], '2': [], '3': [], '4': [], '5': [], '6': [], '7': []})
 authorizations = defaultdict(list)
 invites = defaultdict(list)
 users = []
@@ -44,6 +44,8 @@ def triggerAlarm(username, settings):
         print("message sent!")
         i -= 1
         time.sleep(1)
+    del timers[username]
+
 
 with open('activeAlarms.txt', 'r') as f:
     s = f.read()
@@ -61,6 +63,8 @@ for u in list(activeAlarms):
         t = Timer(time.seconds, triggerAlarm, [u, activeAlarms[u]['settings']])
         t.start()
         timers[u] = t
+
+# TODO: After reading, pastAlarms loses its default dict properties
 
 with open('pastAlarms.txt', 'r') as f:
     s = f.read()
@@ -94,6 +98,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
         # self.request is the client connection
         data = self.request.recv(1024)  # clip input at 1Kb
         text = data.decode('utf-8')
+        pprint(text)
         pprint(json.loads(text))
         jsonRequest = json.loads(text)
 
@@ -265,12 +270,15 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 waking_time = alarm - datetime.datetime.now()
             computed_time = waking_time.seconds
 
+            # TODO: default dict not working correctly for new users
+
+            # TODO: weekday wrong by -1
+
             pastAlarms[user][str(alarm.weekday()+1)].append(computed_time)
 
             with open('pastAlarms.txt', 'w') as file:
                 file.write(json.dumps(pastAlarms))
 
-            # TODO: change from here
             auxSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             HOST = ackAlarms[user]['host']
             PORT = ackAlarms[user]['port']
@@ -285,6 +293,7 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             user = jsonRequest['user']
             addr = {'host': jsonRequest['host'], 'port': jsonRequest['port']}
             ackAlarms[user] = addr
+            self.request.close()
 
 
         # self.request.send('OK'.encode('utf-8'))

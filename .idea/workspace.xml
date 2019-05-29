@@ -6,6 +6,7 @@
       <change beforePath="$PROJECT_DIR$/Server" beforeDir="false" afterPath="$PROJECT_DIR$/Server" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/activeAlarms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/activeAlarms.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pastAlarms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/pastAlarms.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/users.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,20 +16,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Server">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2304">
-              <caret line="2" column="8" lean-forward="true" selection-start-line="2" selection-end-line="3" />
+            <state relative-caret-position="-1245">
+              <caret line="46" column="23" selection-start-line="46" selection-start-column="23" selection-end-line="46" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#24#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/EspDummyClient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-220">
-              <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+            <state relative-caret-position="66">
+              <caret line="12" column="56" selection-start-line="12" selection-start-column="56" selection-end-line="12" selection-end-column="56" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -50,6 +54,7 @@
       <find>invites</find>
       <find>newA</find>
       <find>time</find>
+      <find>pastAlarms</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -58,9 +63,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Server" />
         <option value="$PROJECT_DIR$/venv/EspDummyClient.py" />
         <option value="$PROJECT_DIR$/EspDummyClient.py" />
+        <option value="$PROJECT_DIR$/Server" />
       </list>
     </option>
   </component>
@@ -76,6 +81,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -92,7 +98,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -118,7 +123,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.EspDummyClient">
+  <component name="RunManager" selected="Python.Server">
     <configuration name="EspDummyClient" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SCMU-server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -163,8 +168,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.EspDummyClient" />
         <item itemvalue="Python.Server" />
+        <item itemvalue="Python.EspDummyClient" />
       </list>
     </recent_temporary>
   </component>
@@ -277,7 +282,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558372419305</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="All implemented and working but we should use an NTP Client to have both the server and the app time synchronized">
+      <created>1558797931997</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1558797931997</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TodoView">
@@ -293,7 +305,7 @@
     <frame x="6" y="23" width="1260" height="728" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.35303777" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3817734" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -324,7 +336,8 @@
     <MESSAGE value="Broadcast alarm to arduino and accept invite only ops left that need to be implemented" />
     <MESSAGE value="Only the Broadcast and Trigger Alarm event left to best tested" />
     <MESSAGE value="All Implemented and tested" />
-    <option name="LAST_COMMIT_MESSAGE" value="All Implemented and tested" />
+    <MESSAGE value="All implemented and working but we should use an NTP Client to have both the server and the app time synchronized" />
+    <option name="LAST_COMMIT_MESSAGE" value="All implemented and working but we should use an NTP Client to have both the server and the app time synchronized" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file:///usr/local/Cellar/python/3.7.3/Frameworks/Python.framework/Versions/3.7/lib/python3.7/socketserver.py">
@@ -342,19 +355,22 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Server.py" />
-    <entry file="file://$PROJECT_DIR$/Server">
+    <entry file="file://$PROJECT_DIR$/EspDummyClient.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2304">
-          <caret line="2" column="8" lean-forward="true" selection-start-line="2" selection-end-line="3" />
+        <state relative-caret-position="66">
+          <caret line="12" column="56" selection-start-line="12" selection-start-column="56" selection-end-line="12" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/EspDummyClient.py">
+    <entry file="file://$PROJECT_DIR$/Server">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-220">
-          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+        <state relative-caret-position="-1245">
+          <caret line="46" column="23" selection-start-line="46" selection-start-column="23" selection-end-line="46" selection-end-column="23" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#0#24#0" expanded="true" />
           </folding>
         </state>
       </provider>
