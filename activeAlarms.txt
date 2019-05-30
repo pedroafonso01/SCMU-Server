@@ -1,1 +1,1 @@
-{"mario": {"alarm": 1559141700.034, "settings": {"lights": false, "blinds": false}}}
+{"ze": {"alarm": 1559255880.956, "settings": {"lights": false, "blinds": false}}, "joao": {"alarm": 1559252280.367, "settings": {"lights": false, "blinds": false}}}

@@ -3,7 +3,6 @@ import datetime
 import json
 import ast
 import socket
-import time
 from threading import Timer
 from collections import defaultdict
 from pprint import pprint
@@ -21,11 +20,6 @@ users = []
 ackAlarms = {}
 
 def triggerAlarm(username, settings):
-    # Missing the alarm settings
-    print(username)
-    print(username)
-    print(username)
-
     bc_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     bc_server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     # Set a timeout so the socket does not block
@@ -37,13 +31,11 @@ def triggerAlarm(username, settings):
         'settings': settings,
     }
 
-    # TODO: change the loop cond
     i = 1
     while i > 0:
         bc_server.sendto(json.dumps(message).encode('utf-8'), ('<broadcast>', 37020))
         print("message sent!")
         i -= 1
-        time.sleep(1)
     del timers[username]
 
 
@@ -64,8 +56,6 @@ for u in list(activeAlarms):
         t.start()
         timers[u] = t
 
-# TODO: After reading, pastAlarms loses its default dict properties
-
 with open('pastAlarms.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
@@ -85,11 +75,6 @@ with open('invites.txt', 'r') as f:
     s = f.read()
     if len(s) > 0:
         invites.update(ast.literal_eval(s))
-
-print(activeAlarms)
-print(users)
-print(pastAlarms)
-print(authorizations)
 
 
 class SingleTCPHandler(socketserver.BaseRequestHandler):
@@ -270,10 +255,6 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
                 waking_time = alarm - datetime.datetime.now()
             computed_time = waking_time.seconds
 
-            # TODO: default dict not working correctly for new users
-
-            # TODO: weekday wrong by -1
-
             pastAlarms[user][str(alarm.weekday()+1)].append(computed_time)
 
             with open('pastAlarms.txt', 'w') as file:
@@ -294,10 +275,6 @@ class SingleTCPHandler(socketserver.BaseRequestHandler):
             addr = {'host': jsonRequest['host'], 'port': jsonRequest['port']}
             ackAlarms[user] = addr
             self.request.close()
-
-
-        # self.request.send('OK'.encode('utf-8'))
-        # self.request.close()
 
 
 class SimpleServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
